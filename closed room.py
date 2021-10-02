@@ -400,7 +400,7 @@ for scence in [3.3, 3.2, 3.1]:
             self.slideFricFactor = 240000
             self.A = 2000
             self.B = 0.08
-            self.AP = 5
+            self.AP = 20
             self.lambda_ = 0.2
             self.c = 2
             self.phi = 0.5
@@ -633,15 +633,17 @@ for scence in [3.3, 3.2, 3.1]:
                     agentj_min = Engine(shape_list[agentj_min_index], self.agents_dict, self.steps,
                                         Vec2d.zero(), self.SDM)
                     dji_min, nji = agentj_min.distance(agenti)
-                    if agenti.pDistance > 0:
+                    pDefence_is_valid = False
+                    if agenti.pDistance > 0 and dji_min < agenti.pDistance:
                         pDefense += agenti.pDefense(agentj_min)
                         f1 = agenti.f1_ij(agentj_min)
+                        pDefence_is_valid = True
                     else:
                         f1 = agenti.f1()
                     NearAgentsDisList.append(dji_min)
                     self.infection_judegment(shapei, shape_list[agentj_min_index], dji_min, current_time)
                     for shapej_index in shapej_indexs[0]:
-                        if shapej_index == agentj_min_index or shapej_index == i_index:
+                        if (shapej_index == agentj_min_index and pDefence_is_valid == True) or shapej_index == i_index:
                             continue
                         shapej = shape_list[shapej_index]
                         agentj = Engine(shapej, self.agents_dict, self.steps, Vec2d.zero(), self.SDM)
@@ -651,7 +653,7 @@ for scence in [3.3, 3.2, 3.1]:
                         self.infection_judegment(shapei, shapej, dis, current_time)
                 else:
                     f1 = agenti.f1()
-                    agent_recorder.add_distance(0)
+                    # agent_recorder.add_distance(0)
                 for wall_shape in self.wall_list:
                     wall_interaction += agenti.wallInteraction(wall_shape)
                 try:
